@@ -12,6 +12,13 @@
             "materials": [
                 {"id": 9542, "count": 2}
             ]
+        },
+        {
+            "id": -1,
+            "name": "트리플 가죽끈",
+            "materials": [
+                {"id": 59238, "count": 3}
+            ]
         }
     ]
 }
