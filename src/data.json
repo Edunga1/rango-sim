@@ -1,14 +1,16 @@
 {
+    "version": "1.0.0",
     "items": [
         {
             "id": 9542,
-            "name": "가죽"
+            "name": "가죽",
+            "price": 100
         },
         {
             "id": 59238,
             "name": "가죽끈",
             "materials": [
-                {"id": 9542, "count": 1}
+                {"id": 9542, "count": 2}
             ]
         }
     ]
