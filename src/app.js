@@ -1,14 +1,14 @@
 /**
- * @typedef material
+ * @typedef Material
  * @property {number} id
  * @property {number} count
  */
 /**
- * @typedef item
+ * @typedef Item
  * @property {number} id
  * @property {string} name
  * @property {string} price
- * @property {Array.<material>} materials
+ * @property {Array.<Material>} materials
  */
 /**
  * @typedef itemView
@@ -22,30 +22,69 @@
     function handler(status, data) {
         if (status !== 200) return;
 
-        /** @type {Array.<item>} */
+        /** @type {Array.<Item>} */
         var items = data.items;
         /** @type {Array.<itemView>} */
-        var itemViews = items.map(x => ({
-            item: x,
-            price: price(items, x.id)
-        }));
+        // var itemViews = items.map(x => ({
+        //     item: x,
+        //     price: reduce(items, x.id)
+        // }));
 
-        render(itemViews);
+        // render(itemViews);
+        items.forEach(x => console.log(x.name, reduce(items, x)));
     }
 
     /**
-     * @param {Array.<item>} items
-     * @param {number} code
-     * @return {number} total price
+     * @param {Array.<Item>} items
+     * @param {Item} item
+     * @return {total}
      */
-    function price(items, code) {
-        var item = items.find(x => x.id === code);
+    function reduce(items, item) {
+        function getItem(id) {
+            return items.find(x => x.id === id);
+        }
 
-        if (!item) return 0;
-        if (!Array.isArray(item.materials) || !item.materials.length) return item.price || 0;
-        return item.materials.reduce((pre, x) =>
-            pre + (price(items, x.id) * x.count),
-            0);
+        /**
+         * @param {Item} head
+         * @param {Array.<Item>} stack
+         */
+        function dfs(head, stack) {
+            return (head.materials || []).concat(stack);
+        }
+
+        // function loop(Result, stack) {
+        //     if (!stack.length) return Result;
+
+        //     var [head, ...tail] = stack;
+        //     head = getItem(head.id);
+        //     Result = {
+        //         price: Result.price + (head.price || 0)
+        //     };
+
+        //     return loop(Result, dfs(head, tail));
+        // }
+
+        /**
+         * @param {Result} result
+         * @param {Item} stack
+         * @return {Result}
+         */
+        function loop(result, stack) {
+            var priceSum = 0;
+            if (stack.materials) {
+                var results = stack.materials.map(x => loop({}, getItem(x.id)));
+                priceSum = results.reduce((p, x, i) => p + (x.price || 0) * stack.materials[i].count, 0);
+            }
+
+            return {
+                price: stack.price || priceSum,
+                profit: stack.materials ?
+                    ((stack.price || priceSum) - priceSum) :
+                    0
+            };
+        }
+
+        return loop({}, item);
     }
 
     /**
